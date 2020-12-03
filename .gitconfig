@@ -2,144 +2,52 @@
 	name = Evan Brim
 	email = evanbrim84@gmail.com
 [alias]
-        # lists this list :-)
-        aliases = !git config -l | findstr 'alias'
+  # lists this list :-)
+  aliases = !git config -l | findstr 'alias'      
   
-        #opens the remote repo in VSTS using your default browser
-        rr = "!f() { ref=$(git remote get-url origin); explorer $ref; }; f"
+  #create a new branch
+  create = checkout -b
 
-        #opens the remote repo in VSTS using your default browser to the branches folder
-        rrb = "!f() { ref=$(git remote get-url origin); explorer $ref/branches; }; f"
+  #delete branch 
+  delete = branch -D
 
-        #opens the remote repo in VSTS using your default browser to the active pull requests folder
-        rrpr = "!f() { ref=$(git remote get-url origin); explorer ${ref}/pullrequests; }; f"
+  # git fetch with prune
+  down = fetch --prune
 
-        # usage: git squash {number of commits}
-        squash = "!f(){ git reset --soft ${1} && git commit --edit -m\"$(git log --format=%B --reverse HEAD..HEAD@{1})\"; };f"
-        squashn = "!f(){ git reset --soft HEAD~${1} && git commit --edit -m\"$(git log --format=%B --reverse HEAD..HEAD@{1})\"; };f"
-        
-        # git history list of all commits
-        hist = log --pretty=format:'%C(yellow bold)%h %Creset %C(cyan bold)%ad %Creset %C(green bold)%an%Creset %s %C(yellow bold)%d%Creset %C(cyan bold)(%ar)' --graph --date=short        
-        
-        # git history list of last 16 changes
-        ll = "!f(){ git hist --max-count=16; };f"
+  #git fetch with prune follwed by a pull
+  downall = !git fetch --all --prune && git pull --all
 
-        # git history list of last N changes
-        # 
-        # List the last 5 commits
-        # usage: git lln 5        
-        lln = "!f(){ git hist --max-count=$1; };f"
+  # git history list of last 10 changes
+  hist = "!f(){ git hist --max-count=10; };f"
 
-        #check out existing branch
-        co = checkout
-        sb = "!f(){ git co $1; };f"
-        switch-branch = "!f(){ git co $1; };f"
+  # git history list of last X changes    
+  histx = "!f(){ git hist --max-count=$1; };f"
 
-        #create a new branch
-        cob = checkout -b
-        newb = "!f(){ git cob $1; };f"
+  #list branches
+  lb = branch
+  lball = branch --all
 
-        #list branches
-        br = branch
-        brall = branch --all
-        refs = for-each-ref --sort=-committerdate --format='%(color:white bold)%(refname:short)%(color:reset) %(color:yellow)%(committerdate:relative)%(color:reset) %(color:magenta bold)%(authorname)%(color:reset) %(color:green)%(objectname:short)%(color:reset) %(contents:subject)'
+  pfl = push --force-with-lease
 
-        #delete branch (locally)
-        db = branch -D
-        delete = "!f(){ git db $1; };f"
+  # push new local branch
+  pushup = "!git push --set-upstream origin $(git symbolic-ref --short HEAD)"
 
-        #untrack folders
-        utf = rm -r --cached
+  # adds changes and commits
+  save = !git add . && git commit
 
-        # git status
-        st = status
-
-        # commits pending changes and commits locally
-        # This will open editor to enter in commit message
-        # can be comined with any commit switches, e.g. git save -m "test commit message"
-        # usage: git save
-        # usage: git save -m "commit message"
-        save = !git add . && git commit
-        saveup = "!f() { git add . && git commit -m \"$@\" && git push; }; f"
-
-        # commits pending changes and commits locally with quick WIP (work in progress) commit message
-        # usage: git wip
-        wip = !git add . && git commit -m "WIP"
-
-        # same as git wip but also pushes
-        # great for quickly pushing your work to the server
-        wipup = !git add . && git commit -m "WIP" && git push
-
-        # amends the previous commit
-        # note this will rewrite your history so you need to force push
-        amend = !git add . && git commit --amend
-
-        # pushes a new local branch to the server that hasn't been pushed before
-        pushup = "!git push --set-upstream origin $(git symbolic-ref --short HEAD)"
-
-        # does a force push with lease
-        pfl = push --force-with-lease
-
-        # git fetch with prune
-        down = fetch --prune
-
-        #git fetch with prune follwed by a pull
-        downall = !git fetch --all --prune && git pull --all
-
-        # fetch all
-        fetchall = !git fetch --all
-
-        # pull all
-        pullall = !git pull --all
-
-        # pull specific other branch, i.e. pull master when you're no on master
-        pullbr = "!f(){ git fetch origin $1:$1; };f"
-        pull-branch = !git pullbr
-        
-        # pull master branch
-        pull-master = !git pullbr master
-
-        # git directory diff
-        dd = difftool -d
-
-        # clean all untracked files and directories
-        cleanall = clean -f -d        
-        
-        # deletes all local branches that match the provided input
-        # examples:
-        # dall features               => deletes all branches starting with "features"
-        # dall features/foo*          => deletes all branches starting with "features/foo"
-        # dall */bar                  => deletes all branches ending with "/bar"
-        dall = "!f() { ref=$(git for-each-ref --format=\"%(refname:short)\" refs/heads/$1); git branch -D "$ref"; }; f"
-       
-        # delete all branches not releases or master
-        shda = !git branch -D `git branch | grep -vE 'master|releases|save'`
-
-        #show all local only branches -- this requires the locals.sh script to be in the path       
-        locals = "!locals.sh"
-
-        #show all local only branches -- this requires the locals.sh script to be in the path       
-        prune-locals = "!prune-locals.sh"
-
-        config-src = !git config --list --show-origin
-        
-
-# Setup Visual Code as the default git editor
+  # commits change as work in progress
+  wip = !git add . && git commit -m "WIP"
+     
 [core] 
 	editor = code-insiders --wait
 
-# set the default commit message columns
-[format] 
-        commitMessageColumns = 72
-
-# set git command prompt colors
 [color "branch"]
-  remote = yellow bold
+  remote = blue bold
   current = green bold
 
 [color "status"]
-  added = yellow bold
-  changed = green bold
+  added = green bold
+  changed = yellow bold
   untracked = cyan bold
 
 [color "diff"]
@@ -147,6 +55,3 @@
 
 [fetch]
 	prune = true
-
-[mergetool]
-	keepBackup = false
