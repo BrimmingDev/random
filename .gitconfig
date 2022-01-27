@@ -1,6 +1,11 @@
 [user]
 	name = Evan Brim
 	email = evanbrim84@gmail.com
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
 [alias]
   # lists this list :-)
   aliases = !git config -l | findstr 'alias'      
@@ -12,16 +17,16 @@
   delete = branch -D
 
   # git fetch with prune
-  down = fetch --prune
+  down = fetch --prunez
 
   #git fetch with prune follwed by a pull
   downall = !git fetch --all --prune && git pull --all
 
   # git history list of last 10 changes
-  hist = "!f(){ git hist --max-count=10; };f"
+  hist = "!f(){ git --no-pager log --max-count=10 --pretty=oneline; };f"
 
   # git history list of last X changes    
-  histx = "!f(){ git hist --max-count=$1; };f"
+  histx = "!f(){ git --no-pager log --max-count=$1 --pretty=oneline; };f"
 
   #list branches
   lb = branch
@@ -30,17 +35,15 @@
   pfl = push --force-with-lease
 
   # push new local branch
-  pushup = "!git push --set-upstream origin $(git symbolic-ref --short HEAD)"
+  pushorigin = "!git push --set-upstream origin $(git symbolic-ref --short HEAD)"
 
   # adds changes and commits
-  save = !git add . && git commit
+  quickcommit = !git add . && git commit
 
   # commits change as work in progress
   wip = !git add . && git commit -m "WIP"
-     
-[core] 
-	editor = code-insiders --wait
-
+[core]
+	editor = code --wait
 [color "branch"]
   remote = blue bold
   current = green bold
@@ -55,3 +58,13 @@
 
 [fetch]
 	prune = true
+[pager]
+	branch = false
+[diff]
+  tool = vscode
+[difftool "vscode"]
+  cmd = code --wait --diff $LOCAL $REMOTE
+[merge]
+  tool = vscode
+[mergetool "vscode"]
+  cmd = code --wait $MERGED
